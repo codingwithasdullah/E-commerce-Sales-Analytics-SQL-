@@ -13,9 +13,6 @@ It helps to analyze **best-selling products, revenue per category, and customer 
 - **Payments**: Stores transaction details.  
 - **Reviews**: Stores customer feedback and ratings.
 
-## 🗄️ ER Diagram
-![ER Diagram](er-diagram.png)
-
 ## ⚡ SQL Features Covered
 ✔ Database & Table Creation  
 ✔ Primary and Foreign Keys  
