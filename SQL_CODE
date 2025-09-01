@@ -1,0 +1,121 @@
+-- Create Database
+CREATE DATABASE ecommerce_db;
+USE ecommerce_db;
+
+-- Users Table
+CREATE TABLE Users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100) UNIQUE,
+    city VARCHAR(50),
+    signup_date DATE
+);
+
+-- Products Table
+CREATE TABLE Products (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_name VARCHAR(100),
+    category VARCHAR(50),
+    price DECIMAL(10,2)
+);
+
+-- Orders Table
+CREATE TABLE Orders (
+    order_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    product_id INT,
+    order_date DATE,
+    quantity INT,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    FOREIGN KEY (product_id) REFERENCES Products(product_id)
+);
+
+-- Payments Table
+CREATE TABLE Payments (
+    payment_id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT,
+    amount DECIMAL(10,2),
+    payment_date DATE,
+    payment_method VARCHAR(50),
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id)
+);
+
+-- Reviews Table
+CREATE TABLE Reviews (
+    review_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    product_id INT,
+    rating INT CHECK (rating BETWEEN 1 AND 5),
+    comment TEXT,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    FOREIGN KEY (product_id) REFERENCES Products(product_id)
+);
+use ecommerce_db;
+INSERT INTO Users (name, email, city, signup_date) VALUES
+('Asdullah', 'asd@example.com', 'Chennai', '2024-01-05'),
+('Rahul', 'rahul@example.com', 'Delhi', '2024-02-10'),
+('Priya', 'priya@example.com', 'Mumbai', '2024-03-15'),
+('Ankit', 'ankit@example.com', 'Patna', '2024-04-20');
+
+-- Products
+INSERT INTO Products (product_name, category, price) VALUES
+('Laptop', 'Electronics', 60000),
+('Headphones', 'Electronics', 2000),
+('T-shirt', 'Clothing', 500),
+('Shoes', 'Footwear', 2500),
+('Washing Machine', 'Home Appliances', 30000);
+
+-- Orders
+INSERT INTO Orders (user_id, product_id, order_date, quantity) VALUES
+(1, 1, '2024-05-10', 1),
+(2, 2, '2024-05-12', 2),
+(3, 3, '2024-05-15', 3),
+(1, 4, '2024-05-18', 1),
+(4, 5, '2024-05-20', 1);
+
+-- Payments
+INSERT INTO Payments (order_id, amount, payment_date, payment_method) VALUES
+(1, 60000, '2024-05-10', 'Credit Card'),
+(2, 4000, '2024-05-12', 'UPI'),
+(3, 1500, '2024-05-15', 'Debit Card'),
+(4, 2500, '2024-05-18', 'UPI'),
+(5, 30000, '2024-05-20', 'Net Banking');
+
+-- Reviews
+INSERT INTO Reviews (user_id, product_id, rating, comment) VALUES
+(1, 1, 5, 'Excellent laptop!'),
+(2, 2, 4, 'Good sound quality'),
+(3, 3, 3, 'Average quality'),
+(4, 5, 5, 'Very useful machine');
+SELECT p.product_name, SUM(o.quantity) AS total_sold
+FROM Orders o
+JOIN Products p ON o.product_id = p.product_id
+GROUP BY p.product_name
+ORDER BY total_sold DESC
+LIMIT 5;
+SELECT p.category, SUM(pay.amount) AS total_revenue
+FROM Payments pay
+JOIN Orders o ON pay.order_id = o.order_id
+JOIN Products p ON o.product_id = p.product_id
+GROUP BY p.category
+ORDER BY total_revenue DESC;
+SELECT u.name, SUM(pay.amount) AS lifetime_value
+FROM Payments pay
+JOIN Orders o ON pay.order_id = o.order_id
+JOIN Users u ON o.user_id = u.user_id
+GROUP BY u.user_id, u.name
+ORDER BY lifetime_value DESC
+LIMIT 5;
+SELECT p.category, SUM(pay.amount) AS total_revenue
+FROM Payments pay
+JOIN Orders o ON pay.order_id = o.order_id
+JOIN Products p ON o.product_id = p.product_id
+GROUP BY p.category
+ORDER BY total_revenue DESC;
+SELECT u.name, SUM(pay.amount) AS lifetime_value
+FROM Payments pay
+JOIN Orders o ON pay.order_id = o.order_id
+JOIN Users u ON o.user_id = u.user_id
+GROUP BY u.user_id, u.name
+ORDER BY lifetime_value DESC
+LIMIT 5;
